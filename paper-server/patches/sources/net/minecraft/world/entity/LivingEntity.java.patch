@@ -546,6 +546,7 @@
              }
  
              boolean tookFullDamage = true;
++            boolean allowDamageTickKnockback = false;
 -            if (this.invulnerableTime > 10.0F && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
 +            if (this.invulnerableTime > (float)this.invulnerableDuration / 2.0F && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) { // CraftBukkit - restore use of maxNoDamageTicks
                  if (damage <= this.lastHurt) {
@@ -566,6 +567,7 @@
 +                // CraftBukkit end
                  this.lastHurt = damage;
                  tookFullDamage = false;
++                allowDamageTickKnockback = this instanceof Player && source.getEntity() instanceof Player;
              } else {
 +                // Paper start - only call damage event when actuallyHurt will be called - move call logic down
 +                event = this.handleEntityDamage(source, damage, 0); // Paper - fix invulnerability reduction in EntityDamageEvent - pass lastDamage reduction (none in this branch)
@@ -1147,15 +1149,16 @@
 +                return false;
 +            }
 +
-+            if (source.getEntity() instanceof net.minecraft.world.entity.player.Player) {
++            if (source.getEntity() instanceof net.minecraft.world.entity.player.Player playerEntity) {
++                boolean resetAttackStrength = !(source.is(DamageTypes.SPEAR) && playerEntity.isUsingItem() && playerEntity.getUseItem().has(DataComponents.KINETIC_WEAPON));
 +                // Paper start - PlayerAttackEntityCooldownResetEvent
 +                //((net.minecraft.world.entity.player.Player) damagesource.getEntity()).resetOnlyAttackStrengthTicker(); // Moved from Player in order to make the cooldown reset get called after the damage event is fired
-+                if (source.getEntity() instanceof ServerPlayer player) {
++                if (resetAttackStrength && playerEntity instanceof ServerPlayer player) {
 +                    if (new com.destroystokyo.paper.event.player.PlayerAttackEntityCooldownResetEvent(player.getBukkitEntity(), this.getBukkitEntity(), player.getAttackStrengthScale(0F)).callEvent()) {
 +                        player.resetOnlyAttackStrengthTicker();
 +                    }
-+                } else {
-+                    ((net.minecraft.world.entity.player.Player)source.getEntity()).resetOnlyAttackStrengthTicker();
++                } else if (resetAttackStrength) {
++                    playerEntity.resetOnlyAttackStrengthTicker();
 +                }
 +                // Paper end - PlayerAttackEntityCooldownResetEvent
 +            }
