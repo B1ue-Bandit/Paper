@@ -234,7 +234,7 @@
 +        if (playerAttackEntityEvent.callEvent() && willAttack) { // Logic moved to willAttack local variable.
 +        // Paper end - PlayerAttackEntityEvent
 +            // Paper start - Fix attribute swapping
-+            if (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.fixAttributeSwapping) {
++            if (this.level().paperConfig().unsupportedSettings.fixAttributeSwapping) {
 +                this.detectEquipmentUpdates();
 +            }
 +            // Paper end - Fix attribute swapping
@@ -502,7 +502,7 @@
 +    public void detectEquipmentUpdates() {
 +        super.detectEquipmentUpdates();
 +
-+        if (!io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.updateEquipmentOnPlayerActions) {
++        if (!this.level().paperConfig().unsupportedSettings.fixAttributeSwapping) {
 +            return;
 +        }
 +

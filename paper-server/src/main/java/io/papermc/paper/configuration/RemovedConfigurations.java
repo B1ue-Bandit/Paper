@@ -84,6 +84,7 @@ interface RemovedConfigurations {
         path("logging", "use-rgb-for-named-text-colors"),
         path("unsupported-settings", "allow-grindstone-overstacking"),
         path("unsupported-settings", "allow-tripwire-disarming-exploits"),
+        path("unsupported-settings", "update-equipment-on-player-actions"),
         path("commands", "fix-target-selector-tag-completion"),
         path("misc", "fix-entity-position-desync"),
         path("chunk-system", "gen-parallelism")

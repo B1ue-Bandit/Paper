@@ -30,7 +30,7 @@ import java.util.Set;
 @SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic"})
 public class GlobalConfiguration extends ConfigurationPart {
     private static final Logger LOGGER = LogUtils.getLogger();
-    static final int CURRENT_VERSION = 31; // (when you change the version, change the comment, so it conflicts on rebases): allow-nether property to config
+    static final int CURRENT_VERSION = 32; // (when you change the version, change the comment, so it conflicts on rebases): move attribute swapping settings to world config
     private static GlobalConfiguration instance;
     public static boolean isFirstStart = false;
     public static GlobalConfiguration get() {
@@ -185,10 +185,6 @@ public class GlobalConfiguration extends ConfigurationPart {
         public boolean skipVanillaDamageTickWhenShieldBlocked = false;
         @Comment("This setting controls what compression format is used for region files.")
         public CompressionFormat compressionFormat = CompressionFormat.ZLIB;
-        @Comment("This setting controls if equipment should be updated when handling certain player actions.")
-        public boolean updateEquipmentOnPlayerActions = true;
-        @Comment("This setting controls if player attributes should be updated before attacks to prevent attribute swapping.")
-        public boolean fixAttributeSwapping = true;
         @Comment("This setting controls what item data components don't need to be sanitized in oversized item obfuscation. Adding them re-enables exploits, but may be needed for certain resource packs. (Expected: minecraft:container, minecraft:charged_projectiles and minecraft:bundle_contents)")
         public OversizedItemComponentSanitizer.AssetOversizedItemComponentSanitizerConfiguration oversizedItemComponentSanitizer = new OversizedItemComponentSanitizer.AssetOversizedItemComponentSanitizerConfiguration(Set.of());
 

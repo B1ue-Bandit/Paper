@@ -70,7 +70,7 @@ import org.spongepowered.configurate.serialize.SerializationException;
 @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic"})
 public class WorldConfiguration extends ConfigurationPart {
     private static final Logger LOGGER = LogUtils.getClassLogger();
-    static final int CURRENT_VERSION = 31; // (when you change the version, change the comment, so it conflicts on rebases): migrate spawn loaded configs to gamerule
+    static final int CURRENT_VERSION = 32; // (when you change the version, change the comment, so it conflicts on rebases): add per-world attribute spoofing settings
 
     private final transient SpigotWorldConfig spigotConfig;
     private final transient Identifier worldKey;
@@ -477,6 +477,10 @@ public class WorldConfiguration extends ConfigurationPart {
     public class UnsupportedSettings extends ConfigurationPart {
         public boolean fixInvulnerableEndCrystalExploit = true;
         public boolean disableWorldTickingWhenEmpty = false;
+        @Comment("This setting controls if player equipment and attributes should be updated before certain player actions to prevent attribute swapping.")
+        public boolean fixAttributeSwapping = true;
+        @Comment("This setting controls if spear attack range should be spoofed to clients. Prevents reach attribute swapping with spears.")
+        public boolean spearReachAttributeSpoofing = true;
     }
 
     public Hopper hopper;

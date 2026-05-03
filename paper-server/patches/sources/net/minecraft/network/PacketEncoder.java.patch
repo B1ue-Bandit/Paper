@@ -1,20 +1,27 @@
 --- a/net/minecraft/network/PacketEncoder.java
 +++ b/net/minecraft/network/PacketEncoder.java
-@@ -17,11 +_,13 @@
+@@ -17,11 +_,20 @@
          this.protocolInfo = protocolInfo;
      }
  
 +    static final ThreadLocal<java.util.Locale> ADVENTURE_LOCALE = ThreadLocal.withInitial(() -> null); // Paper - adventure; set player's locale
++    private static final ThreadLocal<Boolean> SPEAR_REACH_ATTRIBUTE_SPOOFING = ThreadLocal.withInitial(() -> true); // Paper - spoof spear attack range to clients
++    public static boolean isSpearReachAttributeSpoofingEnabled() {
++        return SPEAR_REACH_ATTRIBUTE_SPOOFING.get();
++    }
      @Override
      protected void encode(ChannelHandlerContext channelHandlerContext, Packet<T> packet, ByteBuf byteBuf) throws Exception {
          PacketType<? extends Packet<? super T>> packetType = packet.type();
  
          try {
 +            ADVENTURE_LOCALE.set(channelHandlerContext.channel().attr(io.papermc.paper.adventure.PaperAdventure.LOCALE_ATTRIBUTE).get()); // Paper - adventure; set player's locale
++            final io.netty.channel.ChannelHandler packetHandler = channelHandlerContext.pipeline().get("packet_handler");
++            final net.minecraft.server.level.ServerPlayer player = packetHandler instanceof net.minecraft.network.Connection connection ? connection.getPlayer() : null;
++            SPEAR_REACH_ATTRIBUTE_SPOOFING.set(player == null || player.level().paperConfig().unsupportedSettings.spearReachAttributeSpoofing); // Paper - spoof spear attack range to clients
              this.protocolInfo.codec().encode(byteBuf, packet);
              int i = byteBuf.readableBytes();
              if (LOGGER.isDebugEnabled()) {
-@@ -39,7 +_,33 @@
+@@ -39,7 +_,34 @@
  
              throw var9;
          } finally {
@@ -23,6 +30,7 @@
 +            if (packetLength > MAX_PACKET_SIZE || (packetLength > MAX_FINAL_PACKET_SIZE && packet.hasLargePacketFallback())) {
 +                throw new PacketTooLargeException(packet, packetLength);
 +            }
++            SPEAR_REACH_ATTRIBUTE_SPOOFING.set(true); // Paper - spoof spear attack range to clients
 +            // Paper end - Handle large packets disconnecting client
              ProtocolSwapHandler.handleOutboundTerminalPacket(channelHandlerContext, packet);
          }
